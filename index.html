@@ -43,7 +43,7 @@
       box-shadow: 0 2px 10px rgba(0,0,0,0.6);
       transition: transform 0.2s, box-shadow 0.2s;
       cursor: pointer;
-      border: 2px solid black; /* black outline */
+      border: 2px solid black;
     }
     .gallery img:hover {
       transform: scale(1.05);
@@ -78,6 +78,7 @@
     const repoOwner = "neutralgr";
     const repoName = "gifs";
     const exts = [".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"];
+    const baseUrl = "https://neutralgifs.vercel.app/";
 
     async function fetchRecursive(path = "") {
       const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${path}`;
@@ -103,12 +104,13 @@
         el.src = img.download_url;
         el.alt = img.name;
         el.title = img.name;
-        el.addEventListener("click", () => copyLink(img.download_url));
+        el.addEventListener("click", () => copyLink(img.name));
         gallery.appendChild(el);
       });
     }
 
-    function copyLink(link) {
+    function copyLink(filename) {
+      const link = `${baseUrl}${filename}`;
       navigator.clipboard.writeText(link).then(() => {
         showToast(`Copied: ${link}`);
       });
