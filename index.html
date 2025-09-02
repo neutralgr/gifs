@@ -1,17 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neutral Gif</title>
-    <style>
-        body {
-            background-color: black;
-            color: white;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GIFs</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fafafa;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    #search {
+      display: block;
+      margin: 20px auto;
+      padding: 10px;
+      width: 80%;
+      max-width: 400px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .gallery img {
+      width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      transition: transform 0.2s;
+    }
+    .gallery img:hover {
+      transform: scale(1.05);
+    }
+  </style>
 </head>
 <body>
-    <h1>ti koitas bro</h1>
+  <h1>GIFs</h1>
+  <input type="text" id="search" placeholder="Search images..." />
+  <div class="gallery" id="gallery"></div>
+
+  <script>
+    const repoOwner = "neutralgr"; 
+    const repoName = "gifs";
+    const exts = [".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"];
+      
+    async function fetchRecursive(path = "") {
+      const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${path}`;
+      const res = await fetch(url);
+      const files = await res.json();
+
+      let images = [];
+      for (const f of files) {
+        if (f.type === "dir") {
+          images = images.concat(await fetchRecursive(f.path));
+        } else if (exts.some(ext => f.name.toLowerCase().endsWith(ext))) {
+          images.push(f);
+        }
+      }
+      return images;
+    }
+
+    function renderImages(images) {
+      const gallery = document.getElementById("gallery");
+      gallery.innerHTML = "";
+      images.forEach(img => {
+        const el = document.createElement("img");
+        el.src = img.download_url;
+        el.alt = img.name;
+        el.title = img.name;
+        gallery.appendChild(el);
+      });
+    }
+
+    async function init() {
+      const images = await fetchRecursive();
+      renderImages(images);
+
+      const search = document.getElementById("search");
+      search.addEventListener("input", e => {
+        const q = e.target.value.toLowerCase();
+        const filtered = images.filter(img => img.name.toLowerCase().includes(q));
+        renderImages(filtered);
+      });
+    }
+
+    init();
+  </script>
 </body>
 </html>
