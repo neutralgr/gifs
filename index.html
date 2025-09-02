@@ -32,9 +32,9 @@
       color: #888;
     }
     .gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
+      column-count: auto;
+      column-width: 220px;
+      column-gap: 15px;
       margin-top: 20px;
     }
     .gallery img {
@@ -44,6 +44,8 @@
       transition: transform 0.2s, box-shadow 0.2s;
       cursor: pointer;
       border: 2px solid black;
+      display: block;
+      margin-bottom: 15px;
     }
     .gallery img:hover {
       transform: scale(1.05);
